@@ -1,49 +1,40 @@
 #include "ctest.h"
 #include "image.h"
-#include "block.h"
 #include <fcntl.h>
-#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+#include "block.h"
 #include "free.h"
 #include "inode.h"
 #include "mkfs.h"
 
-void test_setup_file_system();
-
-bool test_image_open_creates_file() {
+void test_image_open_creates_file() {
     char *filename = "test_file.vvsfs";
 
     CTEST_ASSERT(image_open(filename, 0) == 0, "file doesn't exist");
 
     remove(filename);
-
-    return true;
 }
 
-bool test_image_open_without_truncate() {
+void test_image_open_without_truncate() {
     char *filename = "test_file.vvsfs";
     open(filename, O_RDWR | O_CREAT);
 
     CTEST_ASSERT(image_open(filename, 0) == 0, "without truncate");
 
     remove(filename);
-
-    return true;
 }
 
-bool test_image_open_with_truncate() {
+void test_image_open_with_truncate() {
     char *filename = "test_file.vvsfs";
     open(filename, O_RDWR | O_CREAT | O_TRUNC);
 
     CTEST_ASSERT(image_open(filename, 1) == 1, "with truncate");
 
     remove(filename);
-
-    return true;
 }
 
-bool test_image_close() {
+void test_image_close() {
     // Setup test file system
     char *filename = "test.vvsfs";
     image_open(filename, 1);
@@ -51,11 +42,9 @@ bool test_image_close() {
     CTEST_ASSERT(image_close() == 0, "");
 
     remove(filename);
-
-    return true;
 }
 
-bool test_bwrite() {
+void test_bwrite() {
     // Setup test file system
     char *filename = "test.vvsfs";
     image_open(filename, 1);
@@ -73,11 +62,9 @@ bool test_bwrite() {
     CTEST_ASSERT(memcmp(write_buffer, read_buffer, BLOCK_SIZE) == 0, "");
 
     image_close();
-
-    return true;
 }
 
-bool test_bread() {
+void test_bread() {
     // Setup test file system
     char *filename = "test.vvsfs";
     image_open(filename, 1);
@@ -97,27 +84,18 @@ bool test_bread() {
     CTEST_ASSERT(memcmp(return_buffer, reference_buffer, BLOCK_SIZE) == 0, "");
 
     image_close();
-
-    return true;
 }
 
-void test_setup_file_system() {
-    char *filename = "test.vvsfs";
-    image_open(filename, 1);
-}
-
-bool test_find_free() {
+void test_find_free() {
     unsigned char test_block[BLOCK_SIZE] = {0};
 
     set_free(test_block, 0, 1);
     set_free(test_block, 1, 1);
 
     CTEST_ASSERT(find_free(test_block) == 2, "");
-
-    return true;
 }
 
-bool test_set_free() {
+void test_set_free() {
     unsigned char test_block[BLOCK_SIZE] = {0};
     int test_bit_num = 0;
     int test_set = 1;
@@ -125,10 +103,9 @@ bool test_set_free() {
     set_free(test_block, test_bit_num, test_set);
 
     CTEST_ASSERT(find_free(test_block) == 1, "");
-    return true;
 }
 
-bool test_ialloc() {
+void test_ialloc() {
     char *filename = "test.vvsfs";
     image_open(filename, 1);
 
@@ -142,11 +119,9 @@ bool test_ialloc() {
 
     image_close();
     remove(filename);
-
-    return true;
 }
 
-bool test_alloc() {
+void test_alloc() {
     char *filename = "test.vvsfs";
     image_open(filename, 1);
 
@@ -163,8 +138,6 @@ bool test_alloc() {
 
     image_close();
     remove(filename);
-
-    return true;
 }
 
 void test_mkfs() {
