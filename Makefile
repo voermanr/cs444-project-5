@@ -1,10 +1,18 @@
-simfs: image.o
+.PHONY: clean
+.PHONY: all
+
+simfs: image.o block.o
 	gcc -Wall -Wextra -o $@ $^
 
+%.o: %.c %.h
+	gcc -Wall -Wextra -c -o $@ $<
 
-image.o:
-	gcc -Wall -Wextra -c image.c
-
-simfs_test: simfs_test.c image.o
-	gcc -Wall -Wextra -o $@ $^ -DCTEST_ENABLE
+simfs_test: simfs_test.c block.o free.o image.o inode.o mkfs.o
+	gcc -Wall -Wextra -g -o $@ $^ -DCTEST_ENABLE
 	./simfs_test
+	rm simfs_test
+
+clean:
+
+all:
+	gcc -Wall -Wextra -c $@ $^

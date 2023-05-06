@@ -41,7 +41,7 @@ do { \
                ctest_color? "\x1b[0;1;31m": "", \
                ctest_color? "\x1b[0m": "", \
                __func__, __LINE__, \
-               #c, m); \
+#c, m); \
         ctest_fail_count++; \
         ctest_status = 1; \
     } else { \
@@ -51,7 +51,7 @@ do { \
                    ctest_color? "\x1b[0;32m": "", \
                    ctest_color? "\x1b[0m": "", \
                    __func__, __LINE__, \
-                   #c, m); \
+#c, m); \
         ctest_pass_count++; \
     } \
 } while (0)
