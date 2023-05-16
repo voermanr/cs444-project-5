@@ -1,5 +1,6 @@
 .PHONY: clean
 .PHONY: all
+.PHONY: test
 
 simfs: image.o block.o
 	gcc -Wall -Wextra -o $@ $^
@@ -7,10 +8,10 @@ simfs: image.o block.o
 %.o: %.c %.h
 	gcc -Wall -Wextra -c -o $@ $<
 
-simfs_test: simfs_test.c block.o free.o image.o inode.o mkfs.o
+test: simfs_test.c block.o free.o image.o inode.o mkfs.o
 	gcc -Wall -Wextra -g -o $@ $^ -DCTEST_ENABLE
-	./simfs_test
-	rm simfs_test
+	./test
+	rm test
 
 clean:
 	rm *.o
