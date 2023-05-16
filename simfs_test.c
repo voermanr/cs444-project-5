@@ -122,6 +122,7 @@ void test_ialloc() {
 }
 
 void test_alloc() {
+    //TODO implement iget()
     char *filename = "test.vvsfs";
     image_open(filename, 1);
 
@@ -163,7 +164,9 @@ void test_find_incore_free() {
     ialloc();
     ialloc();
 
-    CTEST_ASSERT(find_incore_free() == &incore[2],"");
+    struct inode *result_ptr = find_incore_free();
+
+    CTEST_ASSERT(result_ptr == &(incore[2]),"");
 
     image_close();
     remove(filename);
@@ -178,6 +181,9 @@ void test_find_incore_free_no_free_incore() {
     for (int i = 0; i < MAX_SYS_OPEN_FILES; ++i) {
         ialloc();
     }
+
+    struct inode *result = find_incore_free();
+    CTEST_ASSERT(result == NULL,"");
 }
 
 int main(void) {
@@ -201,7 +207,7 @@ int main(void) {
     test_mkfs();
 
     test_find_incore_free();
-    test_find_incore_free_no_free_incore()
+    test_find_incore_free_no_free_incore();
 
     CTEST_EXIT();
 }

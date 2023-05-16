@@ -10,11 +10,8 @@ simfs: image.o block.o
 
 test: simfs_test.c block.o free.o image.o inode.o mkfs.o
 	gcc -Wall -Wextra -g -o $@ $^ -DCTEST_ENABLE
-	./test
-	rm test
 
 clean:
-	rm *.o
 
 all:
 	gcc -Wall -Wextra -c $@ $^

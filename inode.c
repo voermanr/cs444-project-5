@@ -13,6 +13,7 @@
 struct inode incore[MAX_SYS_OPEN_FILES] = {0};
 
 struct inode *find_incore_free(void) {
+
     for (int i = 0; i < MAX_SYS_OPEN_FILES; ++i) {
         if (incore->ref_count == 0) {
             return &incore[i];
@@ -37,4 +38,10 @@ int ialloc(void) {
     }
 
     return return_value;
+}
+
+struct inode *iget(int inode_num) {
+    //TODO return in-core inode for inode_num
+
+    return NULL;
 }
