@@ -9,7 +9,7 @@
 #include "mkfs.h"
 
 void test_image_open_creates_file() {
-    char *filename = "test_file.vvsfs";
+    char *filename = "test.vvsfs";
 
     CTEST_ASSERT(image_open(filename, 0) == 0, "file doesn't exist");
 
@@ -17,7 +17,7 @@ void test_image_open_creates_file() {
 }
 
 void test_image_open_without_truncate() {
-    char *filename = "test_file.vvsfs";
+    char *filename = "test.vvsfs";
     open(filename, O_RDWR | O_CREAT);
 
     CTEST_ASSERT(image_open(filename, 0) == 0, "without truncate");
@@ -26,7 +26,7 @@ void test_image_open_without_truncate() {
 }
 
 void test_image_open_with_truncate() {
-    char *filename = "test_file.vvsfs";
+    char *filename = "test.vvsfs";
     open(filename, O_RDWR | O_CREAT | O_TRUNC);
 
     CTEST_ASSERT(image_open(filename, 1) == 1, "with truncate");
@@ -49,7 +49,7 @@ void test_bwrite() {
     char *filename = "test.vvsfs";
     image_open(filename, 1);
 
-    // Set up test enviroment
+    // Set up test environment
     unsigned char test_value = 'B';
     unsigned char write_buffer[BLOCK_SIZE] = {0};
     write_buffer[420] = test_value;
@@ -69,7 +69,7 @@ void test_bread() {
     char *filename = "test.vvsfs";
     image_open(filename, 1);
 
-    // Set up test enviroment
+    // Set up test environment
     unsigned char test_value = 'B';
     int test_index_num = 420;
 
@@ -154,6 +154,32 @@ void test_mkfs() {
     remove(filename);
 }
 
+void test_find_incore_free() {
+    char *filename = "test.vvsfs";
+    image_open(filename, 1);
+    mkfs();
+
+    // Allocate 2 inodes
+    ialloc();
+    ialloc();
+
+    CTEST_ASSERT(find_incore_free() == &incore[2],"");
+
+    image_close();
+    remove(filename);
+}
+
+void test_find_incore_free_no_free_incore() {
+    char *filename = "test.vvsfs";
+    image_open(filename, 1);
+    mkfs();
+
+    // Allocate all inodes
+    for (int i = 0; i < MAX_SYS_OPEN_FILES; ++i) {
+        ialloc();
+    }
+}
+
 int main(void) {
     CTEST_VERBOSE(0);
 
@@ -173,6 +199,9 @@ int main(void) {
     test_alloc();
 
     test_mkfs();
+
+    test_find_incore_free();
+    test_find_incore_free_no_free_incore()
 
     CTEST_EXIT();
 }

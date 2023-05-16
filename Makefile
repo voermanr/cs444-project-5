@@ -13,6 +13,7 @@ simfs_test: simfs_test.c block.o free.o image.o inode.o mkfs.o
 	rm simfs_test
 
 clean:
+	rm *.o
 
 all:
 	gcc -Wall -Wextra -c $@ $^

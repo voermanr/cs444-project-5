@@ -1,5 +1,6 @@
 #include "free.h"
 #include "block.h"
+#include "inode.h"
 
 #define INODE_OFFSET_SIZE 0
 #define INODE_OFFSET_OWNER_ID 4
@@ -8,7 +9,21 @@
 #define INODE_OFFSET_LINK_COUNT
 #define INODE_OFFSET_BLOCK_PTR_START 9
 #define INODE_OFFSET_BLOCK_PTR_SPACING 2
-#define INODE_NUM_BLOCK_PTR_BLOCKS 16
+
+struct inode incore[MAX_SYS_OPEN_FILES] = {0};
+
+struct inode *find_incore_free(void) {
+    for (int i = 0; i < MAX_SYS_OPEN_FILES; ++i) {
+        if (incore->ref_count == 0) {
+            return &incore[i];
+        }
+    }
+    return 0;
+}
+
+struct inode *find_incore(unsigned int inode_num) {
+    return 0;
+}
 
 int ialloc(void) {
     unsigned char inode_map[BLOCK_SIZE] = {0};
