@@ -8,8 +8,19 @@
 #include "inode.h"
 #include "mkfs.h"
 
+char *filename = "test.vvsfs";
+
+void setup_test_enviroment() {
+    image_open(filename, 1);
+    mkfs();
+}
+
+void teardown_test_enviroment() {
+    image_close();
+    remove(filename);
+}
+
 void test_image_open_creates_file() {
-    char *filename = "test.vvsfs";
 
     CTEST_ASSERT(image_open(filename, 0) == 0, "file doesn't exist");
 
@@ -17,7 +28,6 @@ void test_image_open_creates_file() {
 }
 
 void test_image_open_without_truncate() {
-    char *filename = "test.vvsfs";
     open(filename, O_RDWR | O_CREAT);
 
     CTEST_ASSERT(image_open(filename, 0) == 0, "without truncate");
@@ -26,7 +36,6 @@ void test_image_open_without_truncate() {
 }
 
 void test_image_open_with_truncate() {
-    char *filename = "test.vvsfs";
     open(filename, O_RDWR | O_CREAT | O_TRUNC);
 
     CTEST_ASSERT(image_open(filename, 1) == 1, "with truncate");
@@ -35,9 +44,7 @@ void test_image_open_with_truncate() {
 }
 
 void test_image_close() {
-    // Setup test file system
-    char *filename = "test.vvsfs";
-    image_open(filename, 1);
+    setup_test_enviroment();
 
     CTEST_ASSERT(image_close() == 0, "");
 
@@ -156,34 +163,66 @@ void test_mkfs() {
 }
 
 void test_find_incore_free() {
-    char *filename = "test.vvsfs";
-    image_open(filename, 1);
-    mkfs();
+    setup_test_enviroment();
 
-    // Allocate 2 inodes
-    ialloc();
-    ialloc();
+    incore[0].link_count = 1;
+    incore[1].link_count = 1;
+    incore[2].link_count = 0;
+
+    struct inode *expected_ptr = &incore[2];
 
     struct inode *result_ptr = find_incore_free();
 
-    CTEST_ASSERT(result_ptr == &(incore[2]),"");
+    CTEST_ASSERT(result_ptr == expected_ptr,"");
 
-    image_close();
-    remove(filename);
+    teardown_test_enviroment();
 }
 
 void test_find_incore_free_no_free_incore() {
-    char *filename = "test.vvsfs";
-    image_open(filename, 1);
-    mkfs();
+    setup_test_enviroment();
 
     // Allocate all inodes
     for (int i = 0; i < MAX_SYS_OPEN_FILES; ++i) {
-        ialloc();
+        incore[i].link_count = 1;
     }
 
     struct inode *result = find_incore_free();
     CTEST_ASSERT(result == NULL,"");
+
+    teardown_test_enviroment();
+}
+
+void test_read_inode_passing() {
+    setup_test_enviroment();
+
+    unsigned char *block = {0};
+    bread(BLOCK_INODE_DATA_BLOCK_0, block);
+    struct inode *test_inode;
+
+    ((struct inode *)block)->inode_num = 420;
+    ((struct inode *)block)->owner_id = 2;
+
+
+    read_inode(test_inode, 420);
+    CTEST_ASSERT(test_inode->owner_id == 2,"");
+
+    teardown_test_enviroment();
+}
+
+void test_read_inode() {
+    test_read_node_passing();
+}
+
+void test_find_incore() {
+
+}
+
+void test_find_incore_fail() {
+
+}
+
+void test_iget() {
+
 }
 
 int main(void) {
@@ -209,5 +248,13 @@ int main(void) {
     test_find_incore_free();
     test_find_incore_free_no_free_incore();
 
+    test_find_incore();
+    test_find_incore_fail();
+
+    test_read_inode();
+    test_iget();
+
     CTEST_EXIT();
+
+    teardown_test_enviroment();
 }

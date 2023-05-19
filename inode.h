@@ -17,10 +17,12 @@ struct inode {
     unsigned int inode_num;
 };
 
-extern struct inode incore[MAX_SYS_OPEN_FILES];
+extern struct inode incore[];
 
 struct inode *find_incore_free(void);
 
 int ialloc(void);
+
+void read_inode(struct inode *in, int inode_num);
 
 #endif
