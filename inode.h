@@ -32,4 +32,6 @@ int ialloc(void);
 void read_inode(struct inode *in, int inode_num);
 void write_inode(struct  inode *in);
 
+struct inode *iget(int inode_num);
+
 #endif

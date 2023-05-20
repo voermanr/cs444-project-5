@@ -88,18 +88,20 @@ void write_inode(struct inode *in) {
 }
 
 struct inode *iget(int inode_num) {
-    //TODO return in-core inode for inode_num
     struct inode *sussy_inode = find_incore(inode_num);
+
     if (sussy_inode) {
         (sussy_inode->ref_count)++;
         return sussy_inode;
     }
 
     sussy_inode = find_incore_free();
-    if (sussy_inode) {
-        read_inode(sussy_inode, inode_num);
-        //TODO complete implementation
+    if (!sussy_inode) {
+        return 0;
     }
 
-    return 0;
+    read_inode(sussy_inode, inode_num);
+    sussy_inode->ref_count = 1;
+    sussy_inode->inode_num = inode_num;
+    return sussy_inode;
 }

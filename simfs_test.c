@@ -372,6 +372,61 @@ void test_read_inode() {
 }
 
 
+// IGET()
+void test_iget_pass_already_exists() {
+    setup_test_enviroment();
+    unsigned int inode_num = 69;
+    struct inode writable_inode = {0};
+    writable_inode.inode_num = inode_num;
+    write_inode(&writable_inode);
+
+    struct inode *result_address = 0;
+
+    result_address = iget(inode_num);
+
+    CTEST_ASSERT(result_address,"");_and_teardown_test_enviroment();
+}
+
+void test_iget_pass_create_inode() {
+    setup_test_enviroment();
+    unsigned int inode_num = 69;
+    struct inode *result_address = a_non_null_inode();
+    struct inode *expected_address = 0;
+
+    result_address = iget(inode_num);
+    expected_address = find_incore(inode_num);
+
+    CTEST_ASSERT(result_address == expected_address,"");_and_teardown_test_enviroment();
+}
+
+void test_iget_fail() {
+    setup_test_enviroment();
+    struct inode *result_address = a_non_null_inode();
+    unsigned int nonexistent_inode_num = 22;
+    result_address = iget(nonexistent_inode_num);
+
+    CTEST_ASSERT(result_address == NULL,"");_and_teardown_test_enviroment();
+}
+
+void test_iget() {
+    test_iget_pass_already_exists();
+    test_iget_pass_create_inode();
+    test_iget_fail();
+}
+
+
+void tests_project_6() {
+    test_find_incore_free();
+
+    test_find_incore();
+
+    test_write_inode();
+
+    test_read_inode();
+
+    test_iget();
+}
+
 int main(void) {
     CTEST_VERBOSE(0);
 
@@ -393,15 +448,7 @@ int main(void) {
 
     test_mkfs();
 
-    test_find_incore_free();
-
-    test_find_incore();
-
-    test_write_inode();
-
-    test_read_inode();
-
-    test_iget();
+    tests_project_6();
 
     _and_teardown_test_enviroment();
     CTEST_EXIT();
