@@ -19,17 +19,25 @@ struct inode *a_non_null_inode() {
 
 void setup_test_enviroment() {
     image_open(filename, 1);
+    clear_incore_inodes();
     mkfs();
 }
 
 void _and_allocate_all_nodes() {
     for (int i = 0; i < MAX_SYS_OPEN_FILES; ++i) {
-        set_incore_inode(i);
+        set_incore_inode(i, a_non_null_inode());
     }
 }
 
-void _and_teardown_test_enviroment() {
+void _and_fill_bitmap(unsigned int block_num) {
+    unsigned char block[BLOCK_SIZE] = {0};
+    bread(block_num, block);
+    memset(block, 0xFF, sizeof(block));
+}
+
+void and_teardown_test_enviroment() {
     image_close();
+    clear_incore_inodes();
     remove(filename);
 }
 
@@ -110,7 +118,7 @@ void test_bwrite_pass() {
 
 
     CTEST_ASSERT(memcmp(write_buffer, read_buffer, BLOCK_SIZE) == 0, "");
-    _and_teardown_test_enviroment();
+    and_teardown_test_enviroment();
 }
 
 void test_bwrite_fail() {
@@ -139,7 +147,7 @@ void test_bread_pass() {
 
 
     CTEST_ASSERT(memcmp(return_buffer, reference_buffer, BLOCK_SIZE) == 0, "");
-    _and_teardown_test_enviroment();
+    and_teardown_test_enviroment();
 }
 
 void test_bread_fail() {
@@ -404,6 +412,8 @@ void test_iget_pass_create_inode() {
 
 void test_iget_fail() {
     setup_test_enviroment();
+    _and_allocate_all_nodes();
+    _and_fill_bitmap(BLOCK_INODE_MAP);
     struct inode *result_address = a_non_null_inode();
     unsigned int nonexistent_inode_num = 22;
     result_address = iget(nonexistent_inode_num);
@@ -455,6 +465,7 @@ void test_iput(){
     test_iput_pass_no_more_ref();
 }
 
+void tests_project_5() {
     test_image_open();
 
     test_image_close();
@@ -472,6 +483,29 @@ void test_iput(){
     test_alloc();
 
     test_mkfs();
+}
+
+void tests_project_6() {
+    test_find_incore_free();
+
+    test_find_incore();
+
+    test_write_inode();
+
+    test_read_inode();
+
+    test_iget();
+
+    test_iput();
+
+    test_ialloc_project_6();
+}
+
+
+int main(void) {
+    CTEST_VERBOSE(0);
+
+    tests_project_5();
 
     tests_project_6();
 
