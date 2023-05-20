@@ -419,22 +419,41 @@ void test_iget() {
 }
 
 
-void tests_project_6() {
-    test_find_incore_free();
+// IPUT()
+void test_iput_pass_decrement(){
+    setup_test_enviroment();
+    unsigned int some_arbitrary_ref_count = 22;
 
-    test_find_incore();
+    struct inode an_inode = {0};
+    an_inode.ref_count = some_arbitrary_ref_count;
+
+    iput(&an_inode);
 
     CTEST_ASSERT(an_inode.ref_count == some_arbitrary_ref_count - 1,"");
     and_teardown_test_enviroment();
 }
 
-    test_read_inode();
+void test_iput_pass_no_more_ref() {
+    setup_test_enviroment();
+    unsigned int ref_count = 1;
+    unsigned int inode_num = 69;
 
-    test_iget();
+    struct inode an_inode = {0};
+    an_inode.ref_count = ref_count;
+    an_inode.inode_num = inode_num;
+    struct inode a_different_inode = {0};
+
+    iput(&an_inode);
+    read_inode(&a_different_inode, inode_num);
+
+    CTEST_ASSERT(a_different_inode.inode_num == inode_num,"");
+    and_teardown_test_enviroment();
 }
 
-int main(void) {
-    CTEST_VERBOSE(0);
+void test_iput(){
+    test_iput_pass_decrement();
+    test_iput_pass_no_more_ref();
+}
 
     test_image_open();
 
