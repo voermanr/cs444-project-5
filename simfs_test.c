@@ -291,13 +291,40 @@ void test_find_incore_free() {
     test_find_incore_free_fail();
 }
 
-void test_find_incore_free_no_free_incore() {
-    setup_test_enviroment();
 
-    // Allocate all inodes
-    for (int i = 0; i < MAX_SYS_OPEN_FILES; ++i) {
-        incore[i].link_count = 1;
-    }
+// FIND_INCORE()
+void test_find_incore_pass() {
+    setup_test_enviroment();
+    int inode_num = 69;
+    incore[0].ref_count = 1;
+    incore[0].inode_num = inode_num;
+    incore[1].ref_count = 0;
+    struct inode *expected_address = &incore[0];
+
+    struct inode *result_address = find_incore(inode_num);
+
+    CTEST_ASSERT(expected_address == result_address,"");_and_teardown_test_enviroment();
+}
+
+void test_find_incore_fail() {
+    setup_test_enviroment();
+    int nonexistent_inode_number = 22;
+    incore[0].ref_count = 1;
+    incore[0].inode_num = 21;
+    incore[1].ref_count = 1;
+    incore[1].inode_num = 23;
+    struct inode pointable_inode;
+    struct inode *result_address = &pointable_inode;
+
+    result_address = find_incore(nonexistent_inode_number);
+
+    CTEST_ASSERT(result_address == NULL,"");_and_teardown_test_enviroment();
+}
+
+void test_find_incore() {
+    test_find_incore_pass();
+    //TODO test_find_incore_fail();
+}
 
 
 // WRITE_INODE()
