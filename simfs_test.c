@@ -11,6 +11,12 @@
 // Uber setup
 char *filename = "test.vvsfs";
 
+struct inode *a_non_null_inode() {
+    struct inode pointable_inode;
+    struct inode *result_address = &pointable_inode;
+    return result_address;
+}
+
 void setup_test_enviroment() {
     image_open(filename, 1);
     mkfs();
@@ -18,7 +24,7 @@ void setup_test_enviroment() {
 
 void _and_allocate_all_nodes() {
     for (int i = 0; i < MAX_SYS_OPEN_FILES; ++i) {
-        incore[i].ref_count = 1;
+        set_incore_inode(i);
     }
 }
 
@@ -37,10 +43,6 @@ void _and_teardown_test_enviroment() {
 //
 // Then
 //  CTEST_ASSERT(result == NULL,"");_and_tear_down_test_environment();
-
-void test_iget() {
-
-}
 
 
 // IMAGE OPEN()
@@ -268,11 +270,11 @@ void test_mkfs() {
 // FIND_INCORE_FREE()
 void test_find_incore_free_pass() {
     setup_test_enviroment();
-    incore[0].ref_count = 1;
-    incore[1].ref_count = 1;
-    incore[2].ref_count = 0;
+    set_incore_inode(0);
+    set_incore_inode(1);
+    unset_incore_inode(2);
 
-    struct inode *expected_ptr = &incore[2];
+    struct inode *expected_ptr = get_incore_inode_address(2);
     struct inode *result_ptr = find_incore_free();
 
     CTEST_ASSERT(result_ptr == expected_ptr,"");_and_teardown_test_enviroment();
@@ -296,10 +298,9 @@ void test_find_incore_free() {
 void test_find_incore_pass() {
     setup_test_enviroment();
     int inode_num = 69;
-    incore[0].ref_count = 1;
-    incore[0].inode_num = inode_num;
-    incore[1].ref_count = 0;
-    struct inode *expected_address = &incore[0];
+    int pos = 12;
+    set_incore_inode_and_inode_num(pos, inode_num);
+    struct inode *expected_address = get_incore_inode_address(pos);
 
     struct inode *result_address = find_incore(inode_num);
 
@@ -309,12 +310,10 @@ void test_find_incore_pass() {
 void test_find_incore_fail() {
     setup_test_enviroment();
     int nonexistent_inode_number = 22;
-    incore[0].ref_count = 1;
-    incore[0].inode_num = 21;
-    incore[1].ref_count = 1;
-    incore[1].inode_num = 23;
-    struct inode pointable_inode;
-    struct inode *result_address = &pointable_inode;
+    set_incore_inode_and_inode_num(0, 21);
+    set_incore_inode_and_inode_num(1, 23);
+
+    struct inode *result_address = a_non_null_inode();
 
     result_address = find_incore(nonexistent_inode_number);
 

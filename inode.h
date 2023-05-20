@@ -22,7 +22,14 @@ struct inode {
     unsigned int inode_num;
 };
 
-extern struct inode incore[];
+void set_incore_inode(unsigned int pos);
+void set_incore_inode_with_size(unsigned int pos, unsigned int size);
+void set_incore_inode_and_inode_num(unsigned int pos, unsigned int inode_num);
+void unset_incore_inode(unsigned int pos);
+struct inode *get_incore_inode_address(unsigned int pos);
+
+
+//extern struct inode incore[];
 
 struct inode *find_incore_free(void);
 struct inode *find_incore(unsigned int inode_num);

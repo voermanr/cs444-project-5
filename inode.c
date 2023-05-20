@@ -12,8 +12,32 @@
 #define INODE_OFFSET_BLOCK_PTR_SPACING 2
 
 
+// In-Core array and related functions
 struct inode incore[MAX_SYS_OPEN_FILES] = {0};
 
+void set_incore_inode(unsigned int incore_inode_position) {
+    incore[incore_inode_position].ref_count++;
+}
+
+void set_incore_inode_with_size(unsigned int pos, unsigned int size) {
+    set_incore_inode(pos);
+    incore[pos].size = size;
+}
+
+void unset_incore_inode(unsigned int incore_inode_position) {
+    incore[incore_inode_position].ref_count = 0;
+}
+
+struct inode *get_incore_inode_address(unsigned int pos) {
+    return &incore[pos];
+}
+
+void set_incore_inode_and_inode_num(unsigned int pos, unsigned int inode_num) {
+    incore[pos].inode_num = inode_num;
+}
+
+
+// public functions
 struct inode *find_incore_free(void) {
     for (int i = 0; i < MAX_SYS_OPEN_FILES; ++i) {
         if (incore[i].ref_count == 0) {
@@ -25,7 +49,7 @@ struct inode *find_incore_free(void) {
 
 struct inode *find_incore(unsigned int inode_num) {
     for (int i = 0; i < MAX_SYS_OPEN_FILES; ++i) {
-        if(incore[i].ref_count == 1 && incore[i].inode_num == inode_num) {
+        if(incore[i].ref_count >= 1 && incore[i].inode_num == inode_num) {
             return &incore[i];
         }
     }
