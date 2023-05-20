@@ -226,28 +226,40 @@ void test_ialloc_project_6() {
 
 
 // ALLOC()
-void test_alloc_pass() {//TODO implement iget()
+void test_alloc_pass() {
     setup_test_enviroment();
-    unsigned char test_block_map_block[BLOCK_SIZE];
+    unsigned char block[BLOCK_SIZE] = {0};
 
     // Alloc 3 times
     alloc();
     alloc();
     alloc();
     //TODO remove dependency on bread
-    bread(BLOCK_BLOCK_MAP, test_block_map_block);
+    bread(BLOCK_BLOCK_MAP, block);
 
-    CTEST_ASSERT(find_free(test_block_map_block) == 3, "");
-    _and_teardown_test_enviroment();
+    CTEST_ASSERT(alloc() == 10, "");
+    and_teardown_test_enviroment();
 }
 
 void test_alloc_fail() {
+    setup_test_enviroment();
+    unsigned char block[BLOCK_SIZE] = {0};
 
+    int cant_alloc_no_more = 0;
+
+    while (alloc() != -1) {
+        cant_alloc_no_more = 1;
+    }
+
+    bread(BLOCK_BLOCK_MAP,block);
+
+    CTEST_ASSERT(cant_alloc_no_more == 1, "");
+    and_teardown_test_enviroment();
 }
 
 void test_alloc() {
-    //TODO test_alloc_pass();
-    //TODO test_alloc_fail();
+    test_alloc_pass();
+    test_alloc_fail();
 }
 
 
@@ -276,8 +288,9 @@ void test_mkfs() {
 // FIND_INCORE_FREE()
 void test_find_incore_free_pass() {
     setup_test_enviroment();
-    set_incore_inode(0);
-    set_incore_inode(1);
+
+    set_incore_inode(0, a_non_null_inode());
+    set_incore_inode(1, a_non_null_inode());
     unset_incore_inode(2);
 
     struct inode *expected_ptr = get_incore_inode_address(2);
@@ -305,14 +318,21 @@ void test_find_incore_free() {
 // FIND_INCORE()
 void test_find_incore_pass() {
     setup_test_enviroment();
-    int inode_num = 69;
     int pos = 12;
-    set_incore_inode_and_inode_num(pos, inode_num);
-    struct inode *expected_address = get_incore_inode_address(pos);
+    unsigned int inode_num = 13;
+    unsigned int size = 69;
 
-    struct inode *result_address = find_incore(inode_num);
+    struct inode test_inode = {0};
+    test_inode.ref_count = 1;
+    test_inode.inode_num = inode_num;
+    test_inode.size = size;
 
-    CTEST_ASSERT(expected_address == result_address,"");_and_teardown_test_enviroment();
+    set_incore_inode(pos, &test_inode);
+
+    struct inode *found_inode = find_incore(inode_num);
+
+    CTEST_ASSERT(found_inode->size == size,"");
+    and_teardown_test_enviroment();
 }
 
 void test_find_incore_fail() {
@@ -413,9 +433,7 @@ void test_iget_fail() {
     setup_test_enviroment();
     _and_allocate_all_nodes();
     _and_fill_bitmap(BLOCK_INODE_MAP);
-    struct inode *result_address = a_non_null_inode();
     unsigned int nonexistent_inode_num = 22;
-    result_address = iget(nonexistent_inode_num);
 
     CTEST_ASSERT(iget(nonexistent_inode_num) == NULL,"");
     and_teardown_test_enviroment();
