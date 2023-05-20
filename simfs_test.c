@@ -214,9 +214,9 @@ void test_find_free() {
 // IALLOC()
 void test_ialloc_pass() {
     setup_test_enviroment();
-    unsigned char test_inode_map_block[BLOCK_SIZE];
+    //unsigned char test_inode_map_block[BLOCK_SIZE];
     unsigned int test_pos = 25;
-    for (int i = 0; i < test_pos; ++i) { ialloc(); }
+    for (unsigned int i = 0; i < test_pos; ++i) { ialloc(); }
     struct inode *incore_inode_at_test_pos = get_incore_inode_address(test_pos);
 
     CTEST_ASSERT(ialloc() == incore_inode_at_test_pos, "");
@@ -442,9 +442,11 @@ void test_iget_fail() {
     setup_test_enviroment();
     and_allocate_all_nodes();
     and_fill_bitmap(BLOCK_INODE_MAP);
-    unsigned int nonexistent_inode_num = 22;
+    unsigned int nonexistent_inode_num = 67;
 
-    CTEST_ASSERT(iget(nonexistent_inode_num) == NULL,"");
+    struct inode *iget_result = iget(nonexistent_inode_num);
+
+    CTEST_ASSERT(iget_result == NULL,"");
     and_finally_teardown_test_enviroment();
 }
 
