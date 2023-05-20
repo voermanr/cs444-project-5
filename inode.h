@@ -1,8 +1,13 @@
 #ifndef INODE_H
 #define INODE_H
 
+#include "block.h"
+
 #define INODE_PTR_COUNT 16
 #define MAX_SYS_OPEN_FILES 64
+
+#define INODE_SIZE 64
+#define INODES_PER_BLOCK (BLOCK_SIZE / INODE_SIZE)
 
 struct inode {
     unsigned int size;

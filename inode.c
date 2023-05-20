@@ -1,10 +1,7 @@
 #include "free.h"
-#include "block.h"
 #include "inode.h"
 #include "pack.h"
-
-#define INODE_SIZE 64
-#define INODES_PER_BLOCK (BLOCK_SIZE / INODE_SIZE)
+#include "stdio.h"
 
 #define INODE_OFFSET_SIZE 0
 #define INODE_OFFSET_OWNER_ID 4
@@ -19,7 +16,7 @@ struct inode incore[MAX_SYS_OPEN_FILES] = {0};
 
 struct inode *find_incore_free(void) {
     for (int i = 0; i < MAX_SYS_OPEN_FILES; ++i) {
-        if (incore[i].link_count == 0) {
+        if (incore[i].ref_count == 0) {
             return &incore[i];
         }
     }
@@ -27,7 +24,11 @@ struct inode *find_incore_free(void) {
 }
 
 struct inode *find_incore(unsigned int inode_num) {
-    (void)inode_num;
+    for (int i = 0; i < MAX_SYS_OPEN_FILES; ++i) {
+        if(incore[i].ref_count == 1 && incore[i].inode_num == inode_num) {
+            return &incore[i];
+        }
+    }
     return 0;
 }
 
