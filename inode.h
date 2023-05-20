@@ -22,11 +22,12 @@ struct inode {
     unsigned int inode_num;
 };
 
-void set_incore_inode(unsigned int pos);
+void set_incore_inode(unsigned int pos, struct inode *in);
 void set_incore_inode_with_size(unsigned int pos, unsigned int size);
 void set_incore_inode_and_inode_num(unsigned int pos, unsigned int inode_num);
 void unset_incore_inode(unsigned int pos);
 struct inode *get_incore_inode_address(unsigned int pos);
+void clear_incore_inodes(void);
 
 
 // Useful functions
@@ -37,7 +38,6 @@ int ialloc(void);
 
 void read_inode(struct inode *in, int inode_num);
 void write_inode(struct  inode *in);
-
 struct inode *iget(int inode_num);
 void iput(struct inode *in);
 

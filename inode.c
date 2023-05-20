@@ -15,8 +15,16 @@
 // In-Core array and related functions
 struct inode incore[MAX_SYS_OPEN_FILES] = {0};
 
-void set_incore_inode(unsigned int incore_inode_position) {
-    incore[incore_inode_position].ref_count++;
+void set_incore_inode(unsigned int pos, struct inode *in) {
+    struct inode *target = &incore[pos];
+    target->ref_count = 1;
+    target->inode_num = in->inode_num;
+    target->size = in->size;
+    target->flags = in->flags;
+    target->permissions = in->permissions;
+    target->owner_id = in->owner_id;
+    //TODO target->block_ptr = some for loop
+    target->link_count = in->link_count;
 }
 
 void set_incore_inode_with_size(unsigned int pos, unsigned int size) {
@@ -34,6 +42,25 @@ struct inode *get_incore_inode_address(unsigned int pos) {
 
 void set_incore_inode_and_inode_num(unsigned int pos, unsigned int inode_num) {
     incore[pos].inode_num = inode_num;
+}
+
+void set_default_inode(struct inode *in, unsigned int inode_num) {
+    in->size = 0;
+    in->owner_id = 0;
+    in->permissions = 0;
+    in->flags = 0;
+
+    for (int i = 0; i < INODE_PTR_COUNT; ++i) {
+        in->block_ptr[i] = 0;
+    }
+
+    in->inode_num = inode_num;
+}
+
+void clear_incore_inodes(void){
+    for(int i = 0; i < MAX_SYS_OPEN_FILES; i++) {
+        incore[i].ref_count = 0;
+    }
 }
 
 
