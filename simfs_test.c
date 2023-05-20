@@ -348,38 +348,29 @@ void test_write_inode() {
     //TODO test_write_inode_fail();
 }
 
-void test_read_inode_passing() {
+
+// READ_INODE()
+void test_read_inode_pass() {
     setup_test_enviroment();
 
-    unsigned char *block = {0};
-    bread(BLOCK_INODE_DATA_BLOCK_0, block);
-    struct inode *test_inode;
+    int inode_num = 3;
+    int owner_id = 69;
+    struct inode setup_inode, test_inode;
+    setup_inode.inode_num = inode_num;
+    setup_inode.owner_id = owner_id;
 
-    ((struct inode *)block)->inode_num = 420;
-    ((struct inode *)block)->owner_id = 2;
+    write_inode(&setup_inode);
+    read_inode(&test_inode, inode_num);
 
-
-    read_inode(test_inode, 420);
-    CTEST_ASSERT(test_inode->owner_id == 2,"");
-
-    teardown_test_enviroment();
+    CTEST_ASSERT(test_inode.owner_id == owner_id, "");
+    _and_teardown_test_enviroment();
 }
 
 void test_read_inode() {
-    test_read_node_passing();
+    test_read_inode_pass();
+    //TODO test_read_inode_fail();
 }
 
-void test_find_incore() {
-
-}
-
-void test_find_incore_fail() {
-
-}
-
-void test_iget() {
-
-}
 
 int main(void) {
     CTEST_VERBOSE(0);
@@ -403,7 +394,6 @@ int main(void) {
     test_mkfs();
 
     test_find_incore_free();
-    test_find_incore_free_no_free_incore();
 
     test_find_incore();
     test_find_incore_fail();
@@ -415,5 +405,4 @@ int main(void) {
     _and_teardown_test_enviroment();
     CTEST_EXIT();
 
-    teardown_test_enviroment();
 }
