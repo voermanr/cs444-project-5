@@ -23,13 +23,13 @@ void setup_test_enviroment() {
     mkfs();
 }
 
-void _and_allocate_all_nodes() {
+void and_allocate_all_nodes() {
     for (int i = 0; i < MAX_SYS_OPEN_FILES; ++i) {
         set_incore_inode(i, a_non_null_inode());
     }
 }
 
-void _and_fill_bitmap(unsigned int block_num) {
+void and_fill_bitmap(unsigned int block_num) {
     unsigned char block[BLOCK_SIZE] = {0};
     bread(block_num, block);
     memset(block, 0xFF, sizeof(block));
@@ -44,7 +44,7 @@ void and_teardown_test_enviroment() {
 // individual tests functions are kind of like:
 //
 // Given
-//  setup_test_enviroment();_and_allocate_all_nodes();
+//  setup_test_enviroment();and_allocate_all_nodes();
 //
 // When
 //  struct inode *result = find_incore_free();
@@ -301,7 +301,8 @@ void test_find_incore_free_pass() {
 }
 
 void test_find_incore_free_fail() {
-    setup_test_enviroment();_and_allocate_all_nodes();
+    setup_test_enviroment();
+    and_allocate_all_nodes();
 
     struct inode *result = find_incore_free();
 
@@ -431,8 +432,8 @@ void test_iget_pass_create_inode() {
 
 void test_iget_fail() {
     setup_test_enviroment();
-    _and_allocate_all_nodes();
-    _and_fill_bitmap(BLOCK_INODE_MAP);
+    and_allocate_all_nodes();
+    and_fill_bitmap(BLOCK_INODE_MAP);
     unsigned int nonexistent_inode_num = 22;
 
     CTEST_ASSERT(iget(nonexistent_inode_num) == NULL,"");
