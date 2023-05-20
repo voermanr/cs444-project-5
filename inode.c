@@ -65,6 +65,28 @@ void read_inode(struct inode *in, int inode_num) {
     }
 }
 
+void write_inode(struct inode *in) {
+    int inode_num = in->inode_num;
+    int inode_block_number = inode_num / INODES_PER_BLOCK + BLOCK_INODE_DATA_BLOCK_0;
+    int inode_block_offset = inode_num % INODES_PER_BLOCK;
+    int inode_block_offset_bytes = inode_block_offset * INODE_SIZE;
+
+    unsigned char block[BLOCK_SIZE] = {0};
+    bread(inode_block_number, block);
+
+    write_u32(block + inode_block_offset_bytes + INODE_OFFSET_SIZE, in->size);
+    write_u16(block + inode_block_offset_bytes + INODE_OFFSET_OWNER_ID, in->owner_id);
+    write_u8(block + inode_block_offset_bytes + INODE_OFFSET_PERMISSIONS, in->permissions);
+    write_u8( block + inode_block_offset_bytes + INODE_OFFSET_FLAGS, in->flags);
+
+    for (int i = 0; i < INODE_PTR_COUNT; ++i) {
+        unsigned char *addr = block + inode_block_offset_bytes + INODE_OFFSET_BLOCK_PTR_START + i * INODE_OFFSET_BLOCK_PTR_SPACING;
+        write_u16(addr, in->block_ptr[i]);
+    }
+
+    bwrite(inode_block_number, block);
+}
+
 struct inode *iget(int inode_num) {
     //TODO return in-core inode for inode_num
     struct inode *sussy_inode = find_incore(inode_num);

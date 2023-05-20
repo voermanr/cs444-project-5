@@ -299,10 +299,26 @@ void test_find_incore_free_no_free_incore() {
         incore[i].link_count = 1;
     }
 
-    struct inode *result = find_incore_free();
-    CTEST_ASSERT(result == NULL,"");
 
-    teardown_test_enviroment();
+// WRITE_INODE()
+void test_write_inode_pass() {
+    setup_test_enviroment();
+
+    int inode_num = 69;
+    struct inode setup_inode, test_inode;
+    setup_inode.inode_num = inode_num;
+    setup_inode.size = 100;
+
+    write_inode(&setup_inode);
+    read_inode(&test_inode, inode_num);
+
+    CTEST_ASSERT(test_inode.size == 100, "");
+    _and_teardown_test_enviroment();
+}
+
+void test_write_inode() {
+    test_write_inode_pass();
+    //TODO test_write_inode_fail();
 }
 
 void test_read_inode_passing() {
@@ -365,6 +381,7 @@ int main(void) {
     test_find_incore();
     test_find_incore_fail();
 
+    test_write_inode();
     test_read_inode();
     test_iget();
 
