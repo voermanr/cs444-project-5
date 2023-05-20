@@ -21,11 +21,13 @@ int find_low_clear_bit(unsigned char x) {
     return -1;
 }
 
+unsigned int bitmap_position(int byte_num, int bit_pos) { return byte_num * 8 + bit_pos; }
+
 int find_free(unsigned char *block) {
     for (int i = 0; i < BLOCK_SIZE; ++i) {
-        int return_value = find_low_clear_bit(block[i]);
-        if (return_value != -1) {
-            return return_value;
+        int bit_pos = find_low_clear_bit(block[i]);
+        if (bit_pos != -1) {
+            return bitmap_position(i, bit_pos);
         }
     }
     return -1;
