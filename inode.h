@@ -33,9 +33,7 @@ void clear_incore_inodes(void);
 // Useful functions
 struct inode *find_incore_free(void);
 struct inode *find_incore(unsigned int inode_num);
-
-int ialloc(void);
-
+struct inode *ialloc(void);
 void read_inode(struct inode *in, int inode_num);
 void write_inode(struct  inode *in);
 struct inode *iget(int inode_num);

@@ -78,18 +78,31 @@ struct inode *find_incore(unsigned int inode_num) {
     return 0;
 }
 
-int ialloc(void) {
+struct inode *ialloc(void) {
     unsigned char inode_map[BLOCK_SIZE] = {0};
     bread(BLOCK_INODE_MAP, inode_map);
 
-    int return_value = find_free(inode_map);
+    int inode_index = find_free(inode_map);
 
-    if (return_value != -1) {
-        set_free(inode_map, return_value, 1);
+
+    if (inode_index != -1) {
+        set_free(inode_map, inode_index, 1);
         bwrite(BLOCK_INODE_MAP, inode_map);
     }
 
-    return return_value;
+    if (inode_index == -1) {
+        return NULL;
+    }
+
+    struct inode *incore_inode = iget(inode_index);
+    if (!incore_inode) {
+        return NULL;
+    }
+
+    set_default_inode(incore_inode, inode_index);
+    write_inode(incore_inode);
+
+    return incore_inode;
 }
 
 void read_inode(struct inode *in, int inode_num) {

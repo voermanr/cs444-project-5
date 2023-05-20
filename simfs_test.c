@@ -206,23 +206,22 @@ void test_find_free() {
 void test_ialloc_pass() {
     setup_test_enviroment();
     unsigned char test_inode_map_block[BLOCK_SIZE];
+    unsigned int test_pos = 25;
+    for (int i = 0; i < test_pos; ++i) { ialloc(); }
+    struct inode *incore_inode_at_test_pos = get_incore_inode_address(test_pos);
 
-    ialloc();
-    ialloc();
-    //TODO remove dependency on bread
-    bread(BLOCK_INODE_MAP, test_inode_map_block);
-
-    CTEST_ASSERT(find_free(test_inode_map_block) == 2, "");
-    _and_teardown_test_enviroment();
+    CTEST_ASSERT(ialloc() == incore_inode_at_test_pos, "");
+    and_teardown_test_enviroment();
 }
 
 void test_ialloc_fail() {
 
 }
 
-void test_ialloc() {
+
+void test_ialloc_project_6() {
     test_ialloc_pass();
-    //TODO test_ialloc_fail();
+    test_ialloc_fail();
 }
 
 
