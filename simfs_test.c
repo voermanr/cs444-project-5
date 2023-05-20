@@ -323,7 +323,7 @@ void test_find_incore_fail() {
 
 void test_find_incore() {
     test_find_incore_pass();
-    //TODO test_find_incore_fail();
+    test_find_incore_fail();
 }
 
 
@@ -396,13 +396,13 @@ int main(void) {
     test_find_incore_free();
 
     test_find_incore();
-    test_find_incore_fail();
 
     test_write_inode();
+
     test_read_inode();
+
     test_iget();
 
     _and_teardown_test_enviroment();
     CTEST_EXIT();
-
 }
