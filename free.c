@@ -1,10 +1,6 @@
 #include "block.h"
 
 int set_free(unsigned char *block, int num, int set) {
-    (void) block;
-    (void) num;
-    (void) set;
-
     int byte_num = num / 8;
     int bit_num = num % 8;
 

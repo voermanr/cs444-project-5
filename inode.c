@@ -78,6 +78,7 @@ void read_inode(struct inode *in, int inode_num) {
     unsigned char block[BLOCK_SIZE] = {0};
     bread(inode_block_number, block);
 
+    in->inode_num = inode_num;
     in->size = read_u32(block + inode_block_offset_bytes + INODE_OFFSET_SIZE);
     in->owner_id = read_u16(block + inode_block_offset_bytes + INODE_OFFSET_OWNER_ID);
     in->permissions = read_u8(block + inode_block_offset_bytes + INODE_OFFSET_PERMISSIONS);

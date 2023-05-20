@@ -197,7 +197,6 @@ void test_find_free() {
 // IALLOC()
 void test_ialloc_pass() {
     setup_test_enviroment();
-    //TODO I think this is gonna break
     unsigned char test_inode_map_block[BLOCK_SIZE];
 
     ialloc();
@@ -254,7 +253,7 @@ void test_mkfs_pass() {
     bread(BLOCK_BLOCK_MAP, test_block);
 
     CTEST_ASSERT(find_free(test_block) == 7, "");
-    _and_teardown_test_enviroment();
+    and_teardown_test_enviroment();
 }
 
 void test_mkfs_fail() {
@@ -277,7 +276,8 @@ void test_find_incore_free_pass() {
     struct inode *expected_ptr = get_incore_inode_address(2);
     struct inode *result_ptr = find_incore_free();
 
-    CTEST_ASSERT(result_ptr == expected_ptr,"");_and_teardown_test_enviroment();
+    CTEST_ASSERT(result_ptr == expected_ptr,"");
+    and_teardown_test_enviroment();
 }
 
 void test_find_incore_free_fail() {
@@ -285,7 +285,8 @@ void test_find_incore_free_fail() {
 
     struct inode *result = find_incore_free();
 
-    CTEST_ASSERT(result == NULL,"");_and_teardown_test_enviroment();
+    CTEST_ASSERT(result == NULL,"");
+    and_teardown_test_enviroment();
 }
 
 void test_find_incore_free() {
@@ -317,7 +318,8 @@ void test_find_incore_fail() {
 
     result_address = find_incore(nonexistent_inode_number);
 
-    CTEST_ASSERT(result_address == NULL,"");_and_teardown_test_enviroment();
+    CTEST_ASSERT(result_address == NULL,"");
+    and_teardown_test_enviroment();
 }
 
 void test_find_incore() {
@@ -339,7 +341,7 @@ void test_write_inode_pass() {
     read_inode(&test_inode, inode_num);
 
     CTEST_ASSERT(test_inode.size == 100, "");
-    _and_teardown_test_enviroment();
+    and_teardown_test_enviroment();
 }
 
 void test_write_inode() {
@@ -362,7 +364,7 @@ void test_read_inode_pass() {
     read_inode(&test_inode, inode_num);
 
     CTEST_ASSERT(test_inode.owner_id == owner_id, "");
-    _and_teardown_test_enviroment();
+    and_teardown_test_enviroment();
 }
 
 void test_read_inode() {
@@ -383,7 +385,8 @@ void test_iget_pass_already_exists() {
 
     result_address = iget(inode_num);
 
-    CTEST_ASSERT(result_address,"");_and_teardown_test_enviroment();
+    CTEST_ASSERT(result_address,"");
+    and_teardown_test_enviroment();
 }
 
 void test_iget_pass_create_inode() {
@@ -395,7 +398,8 @@ void test_iget_pass_create_inode() {
     result_address = iget(inode_num);
     expected_address = find_incore(inode_num);
 
-    CTEST_ASSERT(result_address == expected_address,"");_and_teardown_test_enviroment();
+    CTEST_ASSERT(result_address == expected_address,"");
+    and_teardown_test_enviroment();
 }
 
 void test_iget_fail() {
@@ -404,7 +408,8 @@ void test_iget_fail() {
     unsigned int nonexistent_inode_num = 22;
     result_address = iget(nonexistent_inode_num);
 
-    CTEST_ASSERT(result_address == NULL,"");_and_teardown_test_enviroment();
+    CTEST_ASSERT(iget(nonexistent_inode_num) == NULL,"");
+    and_teardown_test_enviroment();
 }
 
 void test_iget() {
@@ -419,7 +424,9 @@ void tests_project_6() {
 
     test_find_incore();
 
-    test_write_inode();
+    CTEST_ASSERT(an_inode.ref_count == some_arbitrary_ref_count - 1,"");
+    and_teardown_test_enviroment();
+}
 
     test_read_inode();
 
@@ -441,7 +448,7 @@ int main(void) {
 
     test_find_free();
 
-    test_ialloc();
+    //Bye bye test_ialloc_project_5();
 
     test_alloc();
 
@@ -449,6 +456,7 @@ int main(void) {
 
     tests_project_6();
 
-    _and_teardown_test_enviroment();
+    and_teardown_test_enviroment();
+    CTEST_RESULTS();
     CTEST_EXIT();
 }

@@ -29,8 +29,7 @@ void unset_incore_inode(unsigned int pos);
 struct inode *get_incore_inode_address(unsigned int pos);
 
 
-//extern struct inode incore[];
-
+// Useful functions
 struct inode *find_incore_free(void);
 struct inode *find_incore(unsigned int inode_num);
 
