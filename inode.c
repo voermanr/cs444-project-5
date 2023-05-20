@@ -27,11 +27,6 @@ void set_incore_inode(unsigned int pos, struct inode *in) {
     target->link_count = in->link_count;
 }
 
-void set_incore_inode_with_size(unsigned int pos, unsigned int size) {
-    set_incore_inode(pos);
-    incore[pos].size = size;
-}
-
 void unset_incore_inode(unsigned int incore_inode_position) {
     incore[incore_inode_position].ref_count = 0;
 }
