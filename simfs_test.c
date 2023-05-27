@@ -183,14 +183,24 @@ void test_find_free() {
 }
 
 
+int max(a, b) {
+    return (a > b) ? a : b;
+}
+
 // IALLOC()
 void test_ialloc_pass() {
     setup_test_enviroment();
-    unsigned int test_pos = 25;
-    for (unsigned int i = 0; i < test_pos; ++i) { ialloc(); }
-    struct inode *incore_inode_at_test_pos = get_incore_inode_address(test_pos);
+    unsigned int test_pos = 0;
+    unsigned char inode_block_map[BLOCK_SIZE];
+    bread(BLOCK_INODE_MAP, inode_block_map);
+    unsigned int ialloc_pos_offset = find_free(inode_block_map);
+    unsigned int test_pos_calc = max(test_pos - ialloc_pos_offset, 1);
 
-    CTEST_ASSERT(ialloc() == incore_inode_at_test_pos, "");
+    for (unsigned int i = 1; i < test_pos_calc; ++i) { ialloc(); }
+    struct inode *incore_inode_at_test_pos = get_incore_inode_address(test_pos_calc);
+
+    struct inode *ialloc_return = ialloc();
+    CTEST_ASSERT(ialloc_return == incore_inode_at_test_pos, "");
     and_finally_teardown_test_environment();
 }
 
@@ -216,7 +226,7 @@ void test_alloc_pass() {
     //TODO remove dependency on bread
     bread(BLOCK_BLOCK_MAP, block);
 
-    CTEST_ASSERT(alloc() == 10, "");
+    CTEST_ASSERT(alloc() == 11, "");
     and_finally_teardown_test_environment();
 }
 
@@ -243,7 +253,7 @@ void test_mkfs_pass() {
     mkfs();
     bread(BLOCK_BLOCK_MAP, test_block);
 
-    CTEST_ASSERT(find_free(test_block) == 7, "");
+    CTEST_ASSERT(find_free(test_block) == 8, "");
     and_finally_teardown_test_environment();
 }
 
@@ -488,12 +498,45 @@ void tests_project_6() {
 }
 
 
+void test_mkfs_ialloc_root_inode() {
+    setup_test_enviroment();
+    unsigned char inode_map_block[BLOCK_SIZE] = {0};
+
+    bread(BLOCK_INODE_MAP, inode_map_block);
+
+    CTEST_ASSERT(find_free(inode_map_block) == 1, "");
+    and_finally_teardown_test_environment();
+}
+
+void test_mkfs_alloc_root_data_block() {
+    setup_test_enviroment();
+    unsigned char block_map_block[BLOCK_SIZE] = {0};
+
+    bread(BLOCK_BLOCK_MAP, block_map_block);
+
+    CTEST_ASSERT(find_free(block_map_block) == 8, "");
+    and_finally_teardown_test_environment();
+}
+
+void test_mkfs_7() {
+    test_mkfs_ialloc_root_inode();
+    test_mkfs_alloc_root_data_block();
+}
+
+
+void tests_project_7() {
+    test_mkfs_7();
+}
+
+
 int main(void) {
     CTEST_VERBOSE(0);
 
     tests_project_5();
 
     tests_project_6();
+
+    tests_project_7();
 
     and_finally_teardown_test_environment();
     CTEST_RESULTS();
