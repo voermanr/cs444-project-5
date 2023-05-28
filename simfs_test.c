@@ -7,6 +7,9 @@
 #include "free.h"
 #include "inode.h"
 #include "mkfs.h"
+#include "directory.h"
+
+#define ROOT_INODE_NUM 0
 
 // Uber setup
 char *filename = "test.vvsfs";
@@ -518,14 +521,54 @@ void test_mkfs_alloc_root_data_block() {
     and_finally_teardown_test_environment();
 }
 
+void test_mkfs_inode_root_initialized() {
+    setup_test_enviroment();
+    struct directory *dir;
+    struct directory_entry *ent;
+    dir = directory_open(ROOT_INODE_NUM);
+    printf("directory_get(): \tdir->offset: %d, \tdir->inode->size: %d\n", dir->offset, dir->inode->size);
+
+    directory_get(dir, ent);
+    unsigned int inode_num = 0;//ent->inode_num;
+
+    struct inode *iget_return = iget(inode_num);
+    CTEST_ASSERT(iget_return->flags == 2, "");
+    CTEST_ASSERT(iget_return->size == 64, "");
+    CTEST_ASSERT(iget_return->block_ptr[0], "");
+    and_finally_teardown_test_environment();
+}
+
 void test_mkfs_7() {
     test_mkfs_ialloc_root_inode();
     test_mkfs_alloc_root_data_block();
+    test_mkfs_inode_root_initialized();
+}
+
+
+// Directory
+void test_directory_open_pass() {
+    setup_test_enviroment();
+
+    CTEST_ASSERT(directory_open(0),"");
+    and_finally_teardown_test_environment();
+}
+
+void test_directory_get_pass() {
+    setup_test_enviroment();
+    struct directory *dir;
+    struct directory_entry *ent;
+    dir = directory_open(ROOT_INODE_NUM);
+
+    CTEST_ASSERT(directory_get(dir, ent) == 0, "");
+    CTEST_ASSERT(!strcmp(ent->name,"."), "");
+    and_finally_teardown_test_environment();
 }
 
 
 void tests_project_7() {
     test_mkfs_7();
+    test_directory_open_pass();
+    test_directory_get_pass();
 }
 
 
