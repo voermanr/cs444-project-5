@@ -64,14 +64,14 @@ void test_image_open_creates_file() {
 }
 
 void test_image_open_pass() {
-    open(filename, O_RDWR | O_CREAT);
+    open(filename, O_RDWR | O_CREAT, 0600);
 
     CTEST_ASSERT(image_open(filename, 0) == 0, "without truncate");
     and_finally_teardown_test_environment();
 }
 
 void test_image_open_truncate_pass() {
-    open(filename, O_RDWR | O_CREAT | O_TRUNC);
+    open(filename, O_RDWR | O_CREAT | O_TRUNC, 0600);
 
     CTEST_ASSERT(image_open(filename, 1) == 1, "with truncate");
     and_finally_teardown_test_environment();
@@ -186,7 +186,7 @@ void test_find_free() {
 }
 
 
-int max(a, b) {
+int max(int a, int b) {
     return (a > b) ? a : b;
 }
 
@@ -394,7 +394,7 @@ void test_iget_pass_already_exists() {
 
     result_address = iget(inode_num);
 
-    CTEST_ASSERT(result_address,"");
+    CTEST_ASSERT(result_address->inode_num == 69,"");
     and_finally_teardown_test_environment();
 }
 
@@ -524,17 +524,19 @@ void test_mkfs_alloc_root_data_block() {
 void test_mkfs_inode_root_initialized() {
     setup_test_enviroment();
     struct directory *dir;
-    struct directory_entry *ent;
+    struct directory_entry *ent = {0};
     dir = directory_open(ROOT_INODE_NUM);
-    printf("directory_get(): \tdir->offset: %d, \tdir->inode->size: %d\n", dir->offset, dir->inode->size);
+    //printf("directory_get(): \tdir->offset: %d, \tdir->inode->size: %d\n", dir->offset, dir->inode->size);
 
     directory_get(dir, ent);
     unsigned int inode_num = 0;//ent->inode_num;
 
-    struct inode *iget_return = iget(inode_num);
-    CTEST_ASSERT(iget_return->flags == 2, "");
-    CTEST_ASSERT(iget_return->size == 64, "");
-    CTEST_ASSERT(iget_return->block_ptr[0], "");
+    struct inode in;
+    read_inode(&in, inode_num);
+    //printf("flags: %d, size: %d\n", in.flags, in.size);
+    CTEST_ASSERT(in.flags == 2, "");
+    CTEST_ASSERT(in.size == 64, "");
+    CTEST_ASSERT(in.block_ptr[0], "");
     and_finally_teardown_test_environment();
 }
 
@@ -556,11 +558,16 @@ void test_directory_open_pass() {
 void test_directory_get_pass() {
     setup_test_enviroment();
     struct directory *dir;
-    struct directory_entry *ent;
+    struct directory_entry *ent = {0};
     dir = directory_open(ROOT_INODE_NUM);
 
     CTEST_ASSERT(directory_get(dir, ent) == 0, "");
+    CTEST_ASSERT(ent->inode_num == ROOT_INODE_NUM, "");
     CTEST_ASSERT(!strcmp(ent->name,"."), "");
+
+    CTEST_ASSERT(directory_get(dir, ent) == 0, "");
+    CTEST_ASSERT(ent->inode_num == ROOT_INODE_NUM, "");
+    CTEST_ASSERT(!strcmp(ent->name,".."),"");
     and_finally_teardown_test_environment();
 }
 

@@ -2,6 +2,8 @@
 #include "inode.h"
 #include "pack.h"
 #include "stdio.h"
+#include "mkfs.h"
+#include "image.h"
 
 #define INODE_OFFSET_SIZE 0
 #define INODE_OFFSET_OWNER_ID 4
@@ -66,7 +68,7 @@ struct inode *find_incore_free(void) {
             return &incore[i];
         }
     }
-    return 0;
+    return NULL;
 }
 
 struct inode *find_incore(unsigned int inode_num) {
@@ -75,7 +77,7 @@ struct inode *find_incore(unsigned int inode_num) {
             return &incore[i];
         }
     }
-    return 0;
+    return NULL;
 }
 
 struct inode *ialloc(void) {
@@ -84,15 +86,10 @@ struct inode *ialloc(void) {
 
     int inode_index = find_free(inode_map);
 
-
     if (inode_index != -1) {
         set_free(inode_map, inode_index, 1);
         bwrite(BLOCK_INODE_MAP, inode_map);
-    }
-
-    if (inode_index == -1) {
-        return NULL;
-    }
+    } else { return NULL; }
 
     struct inode *incore_inode = iget(inode_index);
     if (!incore_inode) {
@@ -148,21 +145,25 @@ void write_inode(struct inode *in) {
 }
 
 struct inode *iget(int inode_num) {
+    //printf("iget(): trying to find inode number %d..", inode_num);
     struct inode *sussy_inode = find_incore(inode_num);
 
     if (sussy_inode) {
+        printf("Found inode incore already.\n");
         (sussy_inode->ref_count)++;
         return sussy_inode;
     }
 
     sussy_inode = find_incore_free();
     if (!sussy_inode) {
-        return 0;
+        //printf("Didn't find any free incore slots!\n");
+        return NULL;
     }
 
     read_inode(sussy_inode, inode_num);
     sussy_inode->ref_count = 1;
     sussy_inode->inode_num = inode_num;
+    //printf("\n\tloaded num: %d, size: %d\n", sussy_inode->inode_num, sussy_inode->size);
     return sussy_inode;
 }
 
@@ -172,6 +173,13 @@ void iput (struct inode *in) {
     }
     in->ref_count--;
     if(in->ref_count == 0) {
+        //printf("iput(): wrote inode %p, num: %d, size: %d\n", &in, in->inode_num, in->size);
         write_inode(in);
     }
 }
+
+//int main(void) {
+//    image_open("trash",1);
+//    mkfs();
+//    iget(0);
+//}

@@ -16,3 +16,9 @@ clean:
 
 all:
 	gcc -Wall -Wextra -c $@ $^
+
+mkfs_test: mkfs.c block.o inode.o image.o pack.o free.o
+	gcc -Wall -Wextra -g -o $@ $^ -DCTEST_ENABLE
+
+inode_test: inode.c block.o free.o pack.o image.o mkfs.o
+	gcc -Wall -Wextra -g -o $@ $^ -DCTEST_ENABLE

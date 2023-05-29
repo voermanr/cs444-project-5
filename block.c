@@ -2,6 +2,9 @@
 #include "image.h"
 #include "block.h"
 #include "free.h"
+#include <stdio.h>
+#include <errno.h>
+#include <string.h>
 
 int calculate_byte_num(int block_num) { return block_num * BLOCK_SIZE; }
 
@@ -14,11 +17,22 @@ unsigned char *bread(int block_num, unsigned char *block) {
     return block;
 }
 
-void bwrite(int block_num, unsigned char *block) {
+int bwrite(int block_num, unsigned char *block) {
     int byte_num = calculate_byte_num(block_num);
+    //printf("bwrite(): \tblock_num: %d \tbyte_num: %d\n", block_num, byte_num);
+    if (lseek(image_fd, byte_num, SEEK_SET) == -1) {
+        printf("lseek error: %s\n", strerror(errno));
+        return -1;
+    }
 
-    lseek(image_fd, byte_num, SEEK_SET);
-    write(image_fd, block, BLOCK_SIZE);
+    //printf("bwrite(): \timage_fd: %d\n", image_fd);
+    int write_bytes = write(image_fd, block, BLOCK_SIZE);
+    if (write_bytes == -1) {
+        printf("bwrite(): \tWrite error: %s\n", strerror(errno));
+        return -1;
+    }
+
+    return write_bytes;
 }
 
 int alloc(void) {
