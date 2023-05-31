@@ -2,6 +2,7 @@
 #include "inode.h"
 #include "directory.h"
 #include "pack.h"
+#include "mkfs.h"
 #include <string.h>
 #include <stdio.h>
 
@@ -24,14 +25,16 @@ int directory_get(struct directory *dir, struct directory_entry *ent) {
     unsigned char block[BLOCK_SIZE] = {0};
     unsigned int offset = dir->offset;
     unsigned int size = dir->inode->size;
-    printf("directory_get(): \tdir->offset: %d, \tdir->inode->size: %d\n", offset, size);
+    //printf("directory_get(): \tdir->offset: %d, \tdir->inode->size: %d\n", offset, size);
+
     if (offset >= size) {
         //printf("no more entries\n");
         return -1;
     }
+
     unsigned int data_block_index = offset / BLOCK_SIZE;
     unsigned int data_block_num = dir->inode->block_ptr[data_block_index];
-    printf("data_block_num: %d\n", data_block_num);
+    //printf("data_block_num: %d\n", data_block_num);
     bread(data_block_num, block);
 
     unsigned char *offset_in_block = block + (offset % BLOCK_SIZE);
@@ -42,3 +45,11 @@ int directory_get(struct directory *dir, struct directory_entry *ent) {
 
     return 0;
 }
+
+/* void main(void) {
+    mkfs();
+    struct directory *dir;
+    dir = directory_open(0);
+    struct directory_entry ent;
+    directory_get(dir, &ent);
+} */

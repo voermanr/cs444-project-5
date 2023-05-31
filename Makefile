@@ -22,3 +22,6 @@ mkfs_test: mkfs.c block.o inode.o image.o pack.o free.o
 
 inode_test: inode.c block.o free.o pack.o image.o mkfs.o
 	gcc -Wall -Wextra -g -o $@ $^ -DCTEST_ENABLE
+
+directory_test: directory.c inode.o pack.o block.o free.o image.o mkfs.o
+	gcc -Wall -Wextra -g -o $@ $^ -DCTEST_ENABLE

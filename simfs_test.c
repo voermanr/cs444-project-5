@@ -193,7 +193,7 @@ int max(int a, int b) {
 // IALLOC()
 void test_ialloc_pass() {
     setup_test_enviroment();
-    unsigned int test_pos = 0;
+    unsigned int test_pos = 1;
     unsigned char inode_block_map[BLOCK_SIZE];
     bread(BLOCK_INODE_MAP, inode_block_map);
     unsigned int ialloc_pos_offset = find_free(inode_block_map);
@@ -203,7 +203,7 @@ void test_ialloc_pass() {
     struct inode *incore_inode_at_test_pos = get_incore_inode_address(test_pos_calc);
 
     struct inode *ialloc_return = ialloc();
-    CTEST_ASSERT(ialloc_return == incore_inode_at_test_pos, "");
+    CTEST_ASSERT(ialloc_return == find_incore(tes), "");
     and_finally_teardown_test_environment();
 }
 
@@ -524,12 +524,12 @@ void test_mkfs_alloc_root_data_block() {
 void test_mkfs_inode_root_initialized() {
     setup_test_enviroment();
     struct directory *dir;
-    struct directory_entry *ent = {0};
+    struct directory_entry ent;
     dir = directory_open(ROOT_INODE_NUM);
     //printf("directory_get(): \tdir->offset: %d, \tdir->inode->size: %d\n", dir->offset, dir->inode->size);
 
-    directory_get(dir, ent);
-    unsigned int inode_num = 0;//ent->inode_num;
+    directory_get(dir, &ent);
+    unsigned int inode_num = ent.inode_num;
 
     struct inode in;
     read_inode(&in, inode_num);
@@ -558,16 +558,16 @@ void test_directory_open_pass() {
 void test_directory_get_pass() {
     setup_test_enviroment();
     struct directory *dir;
-    struct directory_entry *ent = {0};
+    struct directory_entry ent;
     dir = directory_open(ROOT_INODE_NUM);
 
-    CTEST_ASSERT(directory_get(dir, ent) == 0, "");
-    CTEST_ASSERT(ent->inode_num == ROOT_INODE_NUM, "");
-    CTEST_ASSERT(!strcmp(ent->name,"."), "");
+    CTEST_ASSERT(directory_get(dir, &ent) == 0, "");
+    CTEST_ASSERT(ent.inode_num == ROOT_INODE_NUM, "");
+    CTEST_ASSERT(!strcmp(ent.name,"."), "");
 
-    CTEST_ASSERT(directory_get(dir, ent) == 0, "");
-    CTEST_ASSERT(ent->inode_num == ROOT_INODE_NUM, "");
-    CTEST_ASSERT(!strcmp(ent->name,".."),"");
+    CTEST_ASSERT(directory_get(dir, &ent) == 0, "");
+    CTEST_ASSERT(ent.inode_num == ROOT_INODE_NUM, "");
+    CTEST_ASSERT(!strcmp(ent.name,".."),"");
     and_finally_teardown_test_environment();
 }
 

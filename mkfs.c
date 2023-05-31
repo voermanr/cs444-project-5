@@ -29,15 +29,14 @@ void mkfs(void) {
         alloc();
     }
 
-    unsigned int inode_num = ialloc()->inode_num;
+    struct inode *inode_ptr = ialloc();
     unsigned short data_block_num = alloc();
 
-    struct inode vessel;
-    vessel.ref_count = 1;
-    vessel.inode_num = inode_num;
-    vessel.flags = DIRECTORY;
-    vessel.size = DIRECTORY_ENTRY_SIZE * DIRECTORY_DEFAULT_ENTRIES;
-    vessel.block_ptr[0] = data_block_num;
+    inode_ptr->ref_count = 1;
+    inode_ptr->inode_num = 0;
+    inode_ptr->flags = DIRECTORY;
+    inode_ptr->size = DIRECTORY_ENTRY_SIZE * DIRECTORY_DEFAULT_ENTRIES;
+    inode_ptr->block_ptr[0] = data_block_num;
 
     unsigned char inode_data_block_0[BLOCK_SIZE] = {0};
     unsigned char *offset_ptr = inode_data_block_0;
@@ -52,7 +51,7 @@ void mkfs(void) {
 
     bwrite(data_block_num, inode_data_block_0);
 
-    iput(&vessel);
+    iput(inode_ptr);
 
 }
 

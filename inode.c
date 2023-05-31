@@ -4,6 +4,7 @@
 #include "stdio.h"
 #include "mkfs.h"
 #include "image.h"
+#include <string.h>
 
 #define INODE_OFFSET_SIZE 0
 #define INODE_OFFSET_OWNER_ID 4
@@ -55,9 +56,7 @@ void set_default_inode(struct inode *in, unsigned int inode_num) {
 }
 
 void clear_incore_inodes(void){
-    for(int i = 0; i < MAX_SYS_OPEN_FILES; i++) {
-        incore[i].ref_count = 0;
-    }
+    memset(incore, 0, sizeof incore);
 }
 
 
