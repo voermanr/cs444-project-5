@@ -1,6 +1,7 @@
 #ifndef DIRECTORY_H
 #define DIRECTORY_H
 
+#define ROOT_INODE_NUM 0
 #define DIRECTORY_ENTRY_SIZE_ON_DISK 32
 
 struct directory {

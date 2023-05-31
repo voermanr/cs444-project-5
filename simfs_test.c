@@ -8,8 +8,8 @@
 #include "inode.h"
 #include "mkfs.h"
 #include "directory.h"
+#include "ls.c"
 
-#define ROOT_INODE_NUM 0
 
 // Uber setup
 char *filename = "test.vvsfs";
@@ -603,6 +603,15 @@ void test_directory_close() {
     and_finally_teardown_test_environment();
 }
 
+void test_ls(void) {
+    setup_test_enviroment();
+
+    //printf("ls:/\n");
+    //ls();
+
+    and_finally_teardown_test_environment();
+}
+
 void tests_project_7() {
     test_mkfs_7();
     test_directory_open_pass();
@@ -610,6 +619,7 @@ void tests_project_7() {
     test_directory_get_pass();
     test_directory_get_fail();
     test_directory_close();
+    test_ls();
 }
 
 
@@ -623,6 +633,7 @@ int main(void) {
     tests_project_7();
 
     and_finally_teardown_test_environment();
+
     CTEST_RESULTS();
     CTEST_EXIT();
 }
