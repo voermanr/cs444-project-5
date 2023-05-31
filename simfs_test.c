@@ -579,11 +579,37 @@ void test_directory_open_fail() {
     and_finally_teardown_test_environment();
 }
 
+void test_directory_get_fail() {
+    setup_test_enviroment();
+    struct directory *test_root_dir = directory_open(ROOT_INODE_NUM);
+    struct directory_entry test_ent;
+
+    directory_get(test_root_dir, &test_ent);
+    directory_get(test_root_dir, &test_ent);
+
+    CTEST_ASSERT(directory_get(test_root_dir, &test_ent),"");
+
+    and_finally_teardown_test_environment();
+}
+
+void test_directory_close() {
+    setup_test_enviroment();
+    struct directory *test_directory = directory_open(ROOT_INODE_NUM);
+
+    directory_close(test_directory);
+    int directory_closed_happened = 1;
+
+    CTEST_ASSERT(directory_closed_happened,"");
+    and_finally_teardown_test_environment();
+}
+
 void tests_project_7() {
     test_mkfs_7();
     test_directory_open_pass();
     test_directory_open_fail();
     test_directory_get_pass();
+    test_directory_get_fail();
+    test_directory_close();
 }
 
 

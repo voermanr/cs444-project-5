@@ -49,6 +49,11 @@ int directory_get(struct directory *dir, struct directory_entry *ent) {
     return 0;
 }
 
+void directory_close(struct directory *d) {
+    iput(d->inode);
+    free(d);
+}
+
 /* void main(void) {
     mkfs();
     struct directory *dir;
