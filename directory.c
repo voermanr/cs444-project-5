@@ -9,7 +9,7 @@
 struct directory *directory_open(int inode_num) {
     struct inode *directory_inode = iget(inode_num);
     printf("directory_open(): directory_inode.size: %d\n", directory_inode->size);
-    if (!directory_inode) {
+    if (directory_inode == NULL) {
         return NULL;
     }
 
@@ -23,9 +23,11 @@ struct directory *directory_open(int inode_num) {
 
 int directory_get(struct directory *dir, struct directory_entry *ent) {
     unsigned char block[BLOCK_SIZE] = {0};
+    strcpy(ent->name,"");
+    ent->inode_num = -1;
     unsigned int offset = dir->offset;
     unsigned int size = dir->inode->size;
-    //printf("directory_get(): \tdir->offset: %d, \tdir->inode->size: %d\n", offset, size);
+    printf("directory_get(): \tdir->offset: %d, \tdir->inode->size: %d\n", offset, size);
 
     if (offset >= size) {
         //printf("no more entries\n");
@@ -41,7 +43,7 @@ int directory_get(struct directory *dir, struct directory_entry *ent) {
     ent->inode_num = read_u16(offset_in_block);
     strcpy(ent->name, (char*)(offset_in_block + 2));
 
-    dir->offset = offset + sizeof(struct directory_entry);
+    dir->offset = offset + 32; //sizeof(struct directory_entry); //TODO remove magic number
 
     return 0;
 }

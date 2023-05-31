@@ -42,12 +42,12 @@ void mkfs(void) {
     unsigned char *offset_ptr = inode_data_block_0;
     write_u16(offset_ptr, 0);
     offset_ptr += 2;
-    strcpy((char *)(offset_ptr), ".\0");
+    strcpy((char *)(offset_ptr), ".");
     offset_ptr +=16;
     offset_ptr +=14;
     write_u16(offset_ptr, 0);
     offset_ptr += 2;
-    strcpy((char *)(offset_ptr), "..\0");
+    strcpy((char *)(offset_ptr), "..");
 
     bwrite(data_block_num, inode_data_block_0);
 
@@ -55,8 +55,8 @@ void mkfs(void) {
 
 }
 
-// int main(void) {
-    // image_open("garbage.vvsfs",1);
-    // mkfs();
-    // return 0;
-// }
+/* int main(void) {
+    image_open("garbage.vvsfs",1);
+    mkfs();
+    return 0;
+} */

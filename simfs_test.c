@@ -193,17 +193,16 @@ int max(int a, int b) {
 // IALLOC()
 void test_ialloc_pass() {
     setup_test_enviroment();
-    unsigned int test_pos = 1;
-    unsigned char inode_block_map[BLOCK_SIZE];
-    bread(BLOCK_INODE_MAP, inode_block_map);
-    unsigned int ialloc_pos_offset = find_free(inode_block_map);
-    unsigned int test_pos_calc = max(test_pos - ialloc_pos_offset, 1);
+    struct inode *test_inode = NULL;
 
-    for (unsigned int i = 1; i < test_pos_calc; ++i) { ialloc(); }
-    struct inode *incore_inode_at_test_pos = get_incore_inode_address(test_pos_calc);
+    test_inode = ialloc();
+    CTEST_ASSERT(test_inode->inode_num != 0 &&
+                 test_inode->size == 0 &&
+                 test_inode->ref_count == 1 &&
+                 test_inode->owner_id == 0 &&
+                 test_inode->flags == 0,
+                 "default inode has been set");
 
-    struct inode *ialloc_return = ialloc();
-    CTEST_ASSERT(ialloc_return == find_incore(tes), "");
     and_finally_teardown_test_environment();
 }
 
