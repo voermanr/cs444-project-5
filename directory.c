@@ -3,13 +3,14 @@
 #include "directory.h"
 #include "pack.h"
 #include "mkfs.h"
+#include "directory.h"
 #include <string.h>
 #include <stdio.h>
 
 struct directory *directory_open(int inode_num) {
     struct inode *directory_inode = iget(inode_num);
-    printf("directory_open(): directory_inode.size: %d\n", directory_inode->size);
-    if (directory_inode == NULL) {
+    //printf("directory_open(): directory_inode.size: %d\n", directory_inode->size);
+    if (directory_inode == NULL || directory_inode->flags != DIRECTORY) {
         return NULL;
     }
 
@@ -27,7 +28,7 @@ int directory_get(struct directory *dir, struct directory_entry *ent) {
     ent->inode_num = -1;
     unsigned int offset = dir->offset;
     unsigned int size = dir->inode->size;
-    printf("directory_get(): \tdir->offset: %d, \tdir->inode->size: %d\n", offset, size);
+    //printf("directory_get(): \tdir->offset: %d, \tdir->inode->size: %d\n", offset, size);
 
     if (offset >= size) {
         //printf("no more entries\n");

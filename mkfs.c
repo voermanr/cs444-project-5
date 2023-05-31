@@ -11,11 +11,7 @@
 
 #define DIRECTORY_DEFAULT_ENTRIES 2
 
-typedef enum file_type {
-    UNKNOWN,
-    REGULAR,
-    DIRECTORY
-} file_type;
+
 
 void mkfs(void) {
     unsigned char block[BLOCK_SIZE]= {0};

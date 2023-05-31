@@ -22,6 +22,12 @@ struct inode {
     unsigned int inode_num;
 };
 
+typedef enum file_type {
+    UNKNOWN,
+    REGULAR,
+    DIRECTORY
+} file_type;
+
 void set_incore_inode(unsigned int pos, struct inode *in);
 void set_incore_inode_with_size(unsigned int pos, unsigned int size);
 void set_incore_inode_and_inode_num(unsigned int pos, unsigned int inode_num);

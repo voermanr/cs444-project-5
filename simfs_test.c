@@ -570,10 +570,19 @@ void test_directory_get_pass() {
     and_finally_teardown_test_environment();
 }
 
+void test_directory_open_fail() {
+    setup_test_enviroment();
+
+    struct directory *test_dir = directory_open(2);
+    CTEST_ASSERT(test_dir == NULL, "");
+
+    and_finally_teardown_test_environment();
+}
 
 void tests_project_7() {
     test_mkfs_7();
     test_directory_open_pass();
+    test_directory_open_fail();
     test_directory_get_pass();
 }
 
