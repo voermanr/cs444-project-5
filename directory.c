@@ -43,7 +43,7 @@ int directory_get(struct directory *dir, struct directory_entry *ent) {
     ent->inode_num = read_u16(offset_in_block);
     strcpy(ent->name, (char*)(offset_in_block + 2));
 
-    dir->offset = offset + 32; //sizeof(struct directory_entry); //TODO remove magic number
+    dir->offset = offset + DIRECTORY_ENTRY_SIZE_ON_DISK;
 
     return 0;
 }

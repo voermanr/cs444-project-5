@@ -1,6 +1,8 @@
 #ifndef DIRECTORY_H
 #define DIRECTORY_H
 
+#define DIRECTORY_ENTRY_SIZE_ON_DISK 32
+
 struct directory {
     struct inode *inode;
     unsigned int offset;

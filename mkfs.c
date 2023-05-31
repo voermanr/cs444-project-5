@@ -5,9 +5,10 @@
 #include "stdio.h"
 #include "pack.h"
 #include "string.h"
+#include "directory.h"
 #include <errno.h>
 
-#define DIRECTORY_ENTRY_SIZE 32
+
 #define DIRECTORY_DEFAULT_ENTRIES 2
 
 typedef enum file_type {
@@ -35,7 +36,7 @@ void mkfs(void) {
     inode_ptr->ref_count = 1;
     inode_ptr->inode_num = 0;
     inode_ptr->flags = DIRECTORY;
-    inode_ptr->size = DIRECTORY_ENTRY_SIZE * DIRECTORY_DEFAULT_ENTRIES;
+    inode_ptr->size = DIRECTORY_ENTRY_SIZE_ON_DISK * DIRECTORY_DEFAULT_ENTRIES;
     inode_ptr->block_ptr[0] = data_block_num;
 
     unsigned char inode_data_block_0[BLOCK_SIZE] = {0};
