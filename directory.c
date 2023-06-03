@@ -54,6 +54,27 @@ void directory_close(struct directory *d) {
     free(d);
 }
 
+struct inode *namei(char *path) {
+    if (!strcmp(path, "/")) {
+        return iget(ROOT_INODE_NUM);
+    }
+    else { /* TODO: implement:
+              *  /foo,
+              *  /foo/bar
+              *  functionality.*/
+    }
+
+    return NULL;
+}
+
+int directory_make(char *path) {
+    if (strcmp(path, "/")) {
+        return 0;
+    }
+
+    return -1;
+}
+
 /* void main(void) {
     mkfs();
     struct directory *dir;
