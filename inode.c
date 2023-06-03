@@ -148,7 +148,7 @@ struct inode *iget(int inode_num) {
     struct inode *sussy_inode = find_incore(inode_num);
 
     if (sussy_inode) {
-        printf("Found inode incore already.\n");
+        //printf("Found inode incore already.\n");
         (sussy_inode->ref_count)++;
         return sussy_inode;
     }
