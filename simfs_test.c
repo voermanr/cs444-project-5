@@ -622,6 +622,47 @@ void tests_project_7() {
     test_ls();
 }
 
+void test_namei_pass_root_inode() {
+    setup_test_enviroment();
+    struct inode* root_inode_ptr = iget(ROOT_INODE_NUM);
+
+    CTEST_ASSERT(namei("/") == root_inode_ptr,"");
+    and_finally_teardown_test_environment();
+}
+
+void test_namei_fail() {
+    setup_test_enviroment();
+    char *not_the_root_path = "/clowns";
+
+    CTEST_ASSERT(namei(not_the_root_path) == NULL,"");
+    and_finally_teardown_test_environment();
+}
+
+void test_directory_make_pass() {
+    setup_test_enviroment();
+    char *test_path = "/clowns";
+    int success = 0;
+
+    CTEST_ASSERT(directory_make(test_path) == success,"");
+    and_finally_teardown_test_environment();
+}
+
+void test_directory_make_fail() {
+    setup_test_enviroment();
+    char *test_path_but_bad = "erykahbadu";
+    int failure = -1;
+
+    CTEST_ASSERT(directory_make(test_path_but_bad) == failure,"");
+    and_finally_teardown_test_environment();
+
+}
+
+void tests_project_9() {
+    test_namei_pass_root_inode();
+    test_namei_fail();
+
+    test_directory_make_pass();
+}
 
 int main(void) {
     CTEST_VERBOSE(0);
@@ -631,6 +672,8 @@ int main(void) {
     tests_project_6();
 
     tests_project_7();
+
+    tests_project_9();
 
     and_finally_teardown_test_environment();
 
