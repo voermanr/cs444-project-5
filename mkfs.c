@@ -8,11 +8,6 @@
 #include "directory.h"
 #include <errno.h>
 
-
-#define DIRECTORY_DEFAULT_ENTRIES 2
-
-
-
 void mkfs(void) {
     unsigned char block[BLOCK_SIZE]= {0};
     for (int i = 0; i < 1024; ++i) {

@@ -4,6 +4,8 @@
 #define ROOT_INODE_NUM 0
 #define DIRECTORY_ENTRY_SIZE_ON_DISK 32
 
+#define DIRECTORY_DEFAULT_ENTRIES 2
+
 struct directory {
     struct inode *inode;
     unsigned int offset;

@@ -642,8 +642,21 @@ void test_directory_make_pass() {
     setup_test_enviroment();
     char *test_path = "/clowns";
     int success = 0;
+    struct directory_entry ent;
+    struct directory *root_dir = directory_open(ROOT_INODE_NUM);
+    unsigned int assumed_new_directory_inode_num = 1;
+    unsigned int number_of_created_directories = 2;
 
     CTEST_ASSERT(directory_make(test_path) == success,"");
+    CTEST_ASSERT(directory_get(directory_open(assumed_new_directory_inode_num),&ent) == 0,"");
+    CTEST_ASSERT(directory_open(number_of_created_directories) == NULL,"");
+
+    directory_get(root_dir, &ent);
+    CTEST_ASSERT(ent.inode_num == ROOT_INODE_NUM,"");
+    directory_get(root_dir, &ent);
+    CTEST_ASSERT(ent.inode_num == ROOT_INODE_NUM,"");
+    directory_get(root_dir, &ent);
+    CTEST_ASSERT(ent.inode_num == assumed_new_directory_inode_num,"");
     and_finally_teardown_test_environment();
 }
 
@@ -662,6 +675,7 @@ void tests_project_9() {
     test_namei_fail();
 
     test_directory_make_pass();
+    test_directory_make_fail();
 }
 
 int main(void) {
